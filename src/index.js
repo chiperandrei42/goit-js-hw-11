@@ -3,13 +3,17 @@ import Notiflix from 'notiflix';
 
 const API_KEY = '42317927-6bc77f5b742ed8b3300db4489';
 const BASE_URL = 'https://pixabay.com/api/';
+const perPage = 40;
+
 let currentPage = 1;
-
 const form = document.getElementById('search-form');
-const gallery = document.querySelector('.gallery');
-const loadMoreBtn = document.querySelector('.load-more');
+const gallery = document.getElementById('gallery');
+const loadMoreBtn = document.getElementById('load-more');
 
-form.addEventListener('submit', async (event) => {
+form.addEventListener('submit', handleFormSubmit);
+loadMoreBtn.addEventListener('click', loadMoreImages);
+
+async function handleFormSubmit(event) {
   event.preventDefault();
   currentPage = 1;
   const searchQuery = form.searchQuery.value.trim();
@@ -20,49 +24,40 @@ form.addEventListener('submit', async (event) => {
   }
 
   try {
-    const response = await axios.get(BASE_URL, {
-      params: {
-        key: API_KEY,
-        q: searchQuery,
-        image_type: 'photo',
-        orientation: 'horizontal',
-        safesearch: true,
-        page: currentPage,
-        per_page: 40,
-      },
-    });
-
+    const response = await fetchImages(searchQuery);
     handleResponse(response.data.hits);
   } catch (error) {
     console.error('Error fetching images:', error);
     Notiflix.Notify.failure('Failed to fetch images. Please try again later.');
   }
-});
+}
 
-loadMoreBtn.addEventListener('click', async () => {
+async function loadMoreImages() {
   currentPage++;
-
   const searchQuery = form.searchQuery.value.trim();
 
   try {
-    const response = await axios.get(BASE_URL, {
-      params: {
-        key: API_KEY,
-        q: searchQuery,
-        image_type: 'photo',
-        orientation: 'horizontal',
-        safesearch: true,
-        page: currentPage,
-        per_page: 40,
-      },
-    });
-
+    const response = await fetchImages(searchQuery);
     handleResponse(response.data.hits);
   } catch (error) {
     console.error('Error fetching more images:', error);
     Notiflix.Notify.failure('Failed to fetch more images. Please try again later.');
   }
-});
+}
+
+async function fetchImages(searchQuery) {
+  return axios.get(BASE_URL, {
+    params: {
+      key: API_KEY,
+      q: searchQuery,
+      image_type: 'photo',
+      orientation: 'horizontal',
+      safesearch: true,
+      page: currentPage,
+      per_page: perPage,
+    },
+  });
+}
 
 function handleResponse(images) {
   if (images.length === 0) {
@@ -75,24 +70,38 @@ function handleResponse(images) {
   }
 
   images.forEach(image => {
-    const card = document.createElement('div');
-    card.classList.add('photo-card');
-    card.innerHTML = `
-      <img src="${image.webformatURL}" alt="${image.tags}" loading="lazy" />
-      <div class="info">
-        <p class="info-item"><b>Likes:</b> ${image.likes}</p>
-        <p class="info-item"><b>Views:</b> ${image.views}</p>
-        <p class="info-item"><b>Comments:</b> ${image.comments}</p>
-        <p class="info-item"><b>Downloads:</b> ${image.downloads}</p>
-      </div>
-    `;
+    const card = createPhotoCard(image);
     gallery.appendChild(card);
   });
 
-  if (images.length < 40) {
+  if (images.length < perPage) {
     loadMoreBtn.style.display = 'none';
     Notiflix.Notify.info('We\'re sorry, but you\'ve reached the end of search results.');
   } else {
     loadMoreBtn.style.display = 'block';
   }
+}
+
+function createPhotoCard(image) {
+  const card = document.createElement('div');
+  card.classList.add('photo-card');
+
+  const img = document.createElement('img');
+  img.src = image.webformatURL;
+  img.alt = image.tags;
+
+  const info = document.createElement('div');
+  info.classList.add('info');
+
+  const infoItems = ['likes', 'views', 'comments', 'downloads'];
+  infoItems.forEach(item => {
+    const p = document.createElement('p');
+    p.classList.add('info-item');
+    p.innerHTML = `<b>${item.charAt(0).toUpperCase() + item.slice(1)}:</b> ${image[item]}`;
+    info.appendChild(p);
+  });
+
+  card.appendChild(img);
+  card.appendChild(info);
+  return card;
 }
