@@ -103,7 +103,7 @@ async function handleLoadMore(event) {
   }
 }
 
-function initializeApp() {
+function initApp() {
   const searchForm = document.getElementById("search-form");
   const loadMoreButton = document.querySelector(".load-more");
 
@@ -112,4 +112,4 @@ function initializeApp() {
   loadMoreButton.style.display = "none"; 
 }
 
-initializeApp();
+initApp();
