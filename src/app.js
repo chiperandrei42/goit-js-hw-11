@@ -3,9 +3,9 @@ import Notiflix from "notiflix";
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
-const PIXABAY_API_KEY = "42317927-6bc77f5b742ed8b3300db4489";
+const PIXABAY_API_KEY = "42317927-6bc77f5b742ed8b3300db4489"; 
 
-async function fetchImages(query, page = 1) {
+async function fetchPixabayImages(query, page = 1) {
   try {
     const response = await axios.get("https://pixabay.com/api/", {
       params: {
@@ -15,12 +15,12 @@ async function fetchImages(query, page = 1) {
         orientation: "horizontal",
         safesearch: true,
         page,
-        per_page: 40,
+        per_page: 40, 
       },
     });
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch images from Pixabay.");
+    throw new Error("Error fetching images from Pixabay.");
   }
 }
 
@@ -28,17 +28,13 @@ function notifySuccess(message) {
   Notiflix.Notify.success(message);
 }
 
-function notifyInfo(message) {
-  Notiflix.Notify.info(message);
-}
-
-function notifyFailure(message) {
-  Notiflix.Notify.failure(message);
+function notifyEndOfResults() {
+  Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
 }
 
 function renderGallery(images) {
   const gallery = document.querySelector(".gallery");
-  gallery.innerHTML = "";
+  gallery.innerHTML = ""; 
 
   images.forEach(image => {
     const photoCard = document.createElement("div");
@@ -61,7 +57,7 @@ function renderGallery(images) {
   lightbox.refresh();
 }
 
-async function searchImages(event) {
+async function handleSearch(event) {
   event.preventDefault();
   const query = event.target.searchQuery.value.trim();
   if (!query) {
@@ -71,9 +67,9 @@ async function searchImages(event) {
 
   try {
     Notiflix.Loading.standard("Searching for images...");
-    const searchData = await fetchImages(query);
+    const searchData = await fetchPixabayImages(query);
     if (searchData.hits.length === 0) {
-      notifyInfo("End of search results.");
+      notifyEndOfResults();
     } else {
       renderGallery(searchData.hits);
       notifySuccess(`Hooray! ${searchData.totalHits} images found.`);
@@ -85,7 +81,7 @@ async function searchImages(event) {
   }
 }
 
-async function loadMoreImages(event) {
+async function handleLoadMore(event) {
   event.preventDefault();
   const query = document.getElementById("searchQuery").value.trim();
   const currentPage = parseInt(event.target.dataset.page);
@@ -93,9 +89,9 @@ async function loadMoreImages(event) {
 
   try {
     Notiflix.Loading.standard("Loading more images...");
-    const searchData = await fetchImages(query, nextPage);
+    const searchData = await fetchPixabayImages(query, nextPage);
     if (searchData.hits.length === 0) {
-      notifyInfo("End of search results.");
+      notifyEndOfResults();
     } else {
       renderGallery(searchData.hits);
       event.target.dataset.page = nextPage;
@@ -107,13 +103,13 @@ async function loadMoreImages(event) {
   }
 }
 
-function initApp() {
+function initializeApp() {
   const searchForm = document.getElementById("search-form");
   const loadMoreButton = document.querySelector(".load-more");
 
-  searchForm.addEventListener("submit", searchImages);
-  loadMoreButton.addEventListener("click", loadMoreImages);
+  searchForm.addEventListener("submit", handleSearch);
+  loadMoreButton.addEventListener("click", handleLoadMore);
   loadMoreButton.style.display = "none"; 
 }
 
-initApp();
+initializeApp();
