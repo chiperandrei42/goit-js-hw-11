@@ -3,7 +3,7 @@ import Notiflix from "notiflix";
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
-const PIXABAY_API_KEY = "42317927-6bc77f5b742ed8b3300db4489"; 
+const PIXABAY_API_KEY = "42317927-6bc77f5b742ed8b3300db4489";
 
 async function fetchPixabayImages(query, page = 1) {
   try {
@@ -15,7 +15,7 @@ async function fetchPixabayImages(query, page = 1) {
         orientation: "horizontal",
         safesearch: true,
         page,
-        per_page: 40, 
+        per_page: 40,
       },
     });
     return response.data;
@@ -34,7 +34,7 @@ function notifyEndOfResults() {
 
 function renderGallery(images) {
   const gallery = document.querySelector(".gallery");
-  gallery.innerHTML = ""; 
+  gallery.innerHTML = "";
 
   images.forEach(image => {
     const photoCard = document.createElement("div");
@@ -73,6 +73,8 @@ async function handleSearch(event) {
     } else {
       renderGallery(searchData.hits);
       notifySuccess(`Hooray! ${searchData.totalHits} images found.`);
+      const loadMoreButton = document.querySelector(".load-more");
+      loadMoreButton.style.display = searchData.totalHits > 40 ? 'block' : 'none';
     }
   } catch (error) {
     notifyFailure(error.message);
@@ -95,6 +97,8 @@ async function handleLoadMore(event) {
     } else {
       renderGallery(searchData.hits);
       event.target.dataset.page = nextPage;
+      const loadMoreButton = document.querySelector(".load-more");
+      loadMoreButton.style.display = searchData.totalHits > nextPage * 40 ? 'block' : 'none';
     }
   } catch (error) {
     notifyFailure(error.message);
@@ -103,13 +107,4 @@ async function handleLoadMore(event) {
   }
 }
 
-function initApp() {
-  const searchForm = document.getElementById("search-form");
-  const loadMoreButton = document.querySelector(".load-more");
-
-  searchForm.addEventListener("submit", handleSearch);
-  loadMoreButton.addEventListener("click", handleLoadMore);
-  loadMoreButton.style.display = "none"; 
-}
-
-initApp();
+export { handleSearch, handleLoadMore };

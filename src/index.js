@@ -2,6 +2,7 @@ import axios from "axios";
 import Notiflix from "notiflix";
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
+import { handleSearch, handleLoadMore } from "./app.js";
 
 const PIXABAY_API_KEY = "42317927-6bc77f5b742ed8b3300db4489";
 
@@ -111,9 +112,9 @@ function initApp() {
   const searchForm = document.getElementById("search-form");
   const loadMoreButton = document.querySelector(".load-more");
 
-  searchForm.addEventListener("submit", searchImages);
-  loadMoreButton.addEventListener("click", loadMoreImages);
-  loadMoreButton.style.display = "none"; 
+  searchForm.addEventListener("submit", handleSearch);
+  loadMoreButton.addEventListener("click", handleLoadMore);
+  loadMoreButton.style.display = "none";
 }
 
 initApp();
