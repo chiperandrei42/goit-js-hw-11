@@ -98,7 +98,7 @@ async function loadMoreImages(event) {
     if (searchData.hits.length === 0) {
       notifyInfo("End of search results.");
     } else {
-      renderGallery(searchData.hits);
+      appendToGallery(searchData.hits);
       event.target.dataset.page = nextPage;
     }
   } catch (error) {
@@ -108,12 +108,36 @@ async function loadMoreImages(event) {
   }
 }
 
+function appendToGallery(images) {
+  const gallery = document.querySelector(".gallery");
+
+  images.forEach(image => {
+    const photoCard = document.createElement("div");
+    photoCard.classList.add("photo-card");
+    photoCard.innerHTML = `
+      <a href="${image.largeImageURL}" data-lightbox="image">
+        <img src="${image.webformatURL}" alt="${image.tags}" loading="lazy">
+      </a>
+      <div class="info">
+        <p class="info-item"><b>Likes:</b> ${image.likes}</p>
+        <p class="info-item"><b>Views:</b> ${image.views}</p>
+        <p class="info-item"><b>Comments:</b> ${image.comments}</p>
+        <p class="info-item"><b>Downloads:</b> ${image.downloads}</p>
+      </div>
+    `;
+    gallery.appendChild(photoCard);
+  });
+
+  const lightbox = new SimpleLightbox(".gallery a", {});
+  lightbox.refresh();
+}
+
 function initApp() {
   const searchForm = document.getElementById("search-form");
   const loadMoreButton = document.querySelector(".load-more");
 
   searchForm.addEventListener("submit", handleSearch);
-  loadMoreButton.addEventListener("click", handleLoadMore);
+  loadMoreButton.addEventListener("click", loadMoreImages);
   loadMoreButton.style.display = "none";
 }
 
