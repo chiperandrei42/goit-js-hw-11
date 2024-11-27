@@ -7,4 +7,4 @@ let t,e,n,i;function o(t){return t&&t.__esModule?t.default:t}var r,a,s,l,f,c,p,u
                     <p class="info-item"><b>Downloads</b> ${e.downloads}</p>
                 </div>
             `,nz.appendChild(n)}n.data.totalHits<=40*e?(nO.style.visibility="hidden",/*@__PURE__*/o(nA).Notify.info("We're sorry, but you've reached the end of search results.")):nO.style.visibility="visible"}catch(t){console.error("Error fetching data:",t),/*@__PURE__*/o(nA).Notify.failure("Something went wrong, please try again.")}};nL.addEventListener("click",()=>{nz.innerHTML="",nI=1,nM(t=encodeURIComponent(nB.value).replaceAll("%20","+"),nI),nO.style.visibility="hidden"}),nO.addEventListener("click",()=>{nI++,nM(t,nI),nO.style.visibility="hidden"});
-//# sourceMappingURL=index.ea415b7e.js.map
+//# sourceMappingURL=index.bbac2dda.js.map
