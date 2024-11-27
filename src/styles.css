@@ -173,3 +173,43 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.gallery {
+    display:flex;
+    justify-content: space-around;
+    gap:30px;
+    flex-wrap: wrap;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 200px;
+}
+
+.photo-card img {
+    width:430px;
+    object-fit: cover;
+    height:300px;
+}
+
+.photo-card {
+    padding-bottom:10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.info {
+    display:flex;
+    gap:10px;
+    justify-content: space-evenly;
+    border-top: none;
+}
+
+.info-item {
+    display:flex;
+    flex-direction: column;
+    gap:10px;
+    align-items: center;
+    padding-top:10px;
+}
+
+.info-item b {
+    font-weight: 600;
+}
