@@ -1,5 +1,7 @@
 import axios from "axios";
 import Notiflix from "notiflix";
+import Simplelightbox from "simplelightbox";
+import 'simplelightbox/dist/simple-lightbox.min.css';
 const apiKey = '42317927-6bc77f5b742ed8b3300db4489';
 
 const searchQuery = document.querySelector("[name='searchQuery']");
@@ -25,7 +27,7 @@ const fetchImages = async (query, page) => {
             const newElement = document.createElement('div');
             newElement.classList.add("photo-card");
             newElement.innerHTML = `
-                <img src="${hit.webformatURL}" alt="${hit.tags}" loading="lazy" />
+                <a href="${hit.largeImageURL}"><img src="${hit.webformatURL}" alt="${hit.tags}" loading="lazy" /></a>
                 <div class="info">
                     <p class="info-item"><b>Likes</b> ${hit.likes}</p>
                     <p class="info-item"><b>Views</b> ${hit.views}</p>
@@ -42,25 +44,54 @@ const fetchImages = async (query, page) => {
         } else {
             loadMoreButton.style.visibility = "visible";
         }
+
+        lightbox.refresh();
+
+        lightbox.on('shown.simplelightbox', () => {
+        document.body.style.overflow = 'hidden';
+        })
+        lightbox.on('closed.simplelightbox', () => {
+        document.body.style.overflow = '';
+    })
+
+        
     } catch (error) {
         console.error("Error fetching data:", error);
         Notiflix.Notify.failure("Something went wrong, please try again.");
     }
+
 };
 
-searchButton.addEventListener('click', () => {
+
+const searchFunction = () => {
     gallery.innerHTML = "";
-    page = 1;
+        page = 1;
     const userInput = searchQuery.value;
     replaceUserInput = encodeURIComponent(userInput).replaceAll("%20", "+");
 
     fetchImages(replaceUserInput, page);
 
     loadMoreButton.style.visibility = "hidden";
+}
+
+searchQuery.addEventListener('keypress', (event) => {
+    if (event.key === "Enter") {
+        searchFunction();
+    }
 });
+
+searchButton.addEventListener('click', () => {
+    searchFunction();
+})
+
 
 loadMoreButton.addEventListener('click', () => {
     page++;
     fetchImages(replaceUserInput, page);
     loadMoreButton.style.visibility = "hidden";
+});
+
+const lightbox = new Simplelightbox('.photo-card a', {
+    scrollZoom: false,
+    disableScroll: true,
 });
