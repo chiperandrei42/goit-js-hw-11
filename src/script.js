@@ -1,6 +1,6 @@
 import axios from "axios";
 import Notiflix from "notiflix";
-const apiKey = process.env.VITE_API_KEY;
+const apiKey = '42317927-6bc77f5b742ed8b3300db4489';
 
 const searchQuery = document.querySelector("[name='searchQuery']");
 const searchButton = document.querySelector(".searchButton");
